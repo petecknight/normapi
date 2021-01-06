@@ -1,0 +1,57 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: normapi
+  labels:
+    app: normapi
+spec:
+  selector:
+    app: normapi
+  ports:
+    - name: web
+      port: 8011
+      nodePort: 30011
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: normapi
+  namespace: default
+  labels:
+    app: normapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: normapi
+  template:
+    metadata:
+      labels:
+        app: normapi
+    spec:
+      containers:
+        - name: normapi
+          image: petecknight/normapi:1
+          ports:
+            - name: web
+              containerPort: 8011
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: normapi
+  namespace: default
+  labels:
+    app: normapi
+    release: monitor-stack
+spec:
+  selector:
+    matchLabels:
+      app: normapi
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: web
+      path: /metrics
+      interval: 10s

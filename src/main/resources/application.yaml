@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: normapi
+
+server:
+  port : 8011
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+      base-path: /
+      path-mapping:
+        prometheus: metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        pushgateway:
+          enabled: true
